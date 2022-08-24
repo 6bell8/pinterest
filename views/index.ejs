@@ -1,0 +1,87 @@
+<%- include("include/header"); %>
+<main id="main">
+  <nav id="filter">
+    <h2 class="blind">filtering menu</h2>
+    <ul>
+      <li class="on" data-filter="item">ALL</li>
+      <li data-filter="paint">PAINT</li>
+      <li data-filter="photo">PHOTO</li>
+      <li data-filter="sketch">SKETCH</li>
+    </ul>
+  </nav>
+  <div id="works">
+    <ul class="itemList">
+      <% list.forEach((item,idx)=>{ %>
+      <li class="item <%= item.category %>">
+        <a href="<%= item.image %>" data-fancybox="photo" data-caption="<%= item.title %>">
+          <div class="img">
+            <img src="<%= item.image %>" alt="" />
+          </div>
+          <div class="info">
+            <h2><%= item.title %></h2>
+            <p class="desc"><%= item.desc %></p>
+            <p class="point">
+              <span class="num"><%= item.point %></span>
+            </p>
+          </div>
+        </a>
+      </li>
+      <% }) %>
+    </ul>
+  </div>
+</main>
+<div class="cursor">
+  <span class="txt"></span>
+</div>
+
+<script>
+  const itemList = $("#works .itemList");
+  const filterList = $("#filter li");
+  const cursor = $(".cursor");
+
+  let grid = null;
+
+  //itemList.innerHtml = tempHtml;
+  // itemList.html(tempHtml);
+  let = itemList.imagesLoaded().always(function () {
+    grid = itemList.isotope({
+      itemSelector: ".item",
+      percentPosition: true,
+      layoutMode: "masonry",
+      getSortData: {
+        point: ".point num parseFloat",
+      },
+    });
+  });
+
+  filterList.on("click", function () {
+    $(this).addClass("on").siblings().removeClass("on");
+    // console.log($(this).data("filter"));
+    const filter = $(this).data("filter");
+    grid.isotope({ filter: `.${filter}`, sortBy: "point", sortAscending: false });
+  });
+  //이벤트 위임 (delegation)
+  $("body").on("click", ".fancybox_caption a", function () {
+    // console.log($(this).attr("href"));
+    // return flase;
+  });
+
+  $(window).on(
+    "mousemove",
+    _.throttle(function (e) {
+      gsap.to(cursor, { left: e.clientX, top: e.clientY });
+    }, 50)
+  );
+
+  $(".itemList").on("mouseenter", "li", function () {
+    cursor.find(".txt").text("CLICK");
+    gsap.killTweensOf("cursor");
+    gsap.to(cursor, { width: 100, height: 100, backgroundColor: "#f00", ease: "elastic", duration: 1 });
+  });
+  $(".itemList").on("mouseleave", "li", function () {
+    cursor.find(".txt").text("");
+    gsap.killTweensOf("cursor"); //기존에 있던 기능들을 한방에 죽이는 것
+    gsap.to(cursor, { width: 20, height: 20, backgroundColor: "#fff", ease: "power4", duration: 0.25 });
+  });
+</script>
+<%- include("include/footer"); %>
