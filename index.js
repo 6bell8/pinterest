@@ -7,7 +7,7 @@ const cloudinary = require("cloudinary");
 
 const MongoClient = require("mongodb").MongoClient;
 let db = null;
-MongoClient.connect("mongodb+srv://parkgutime:ys06644964@cluster0.jmdlgc1.mongodb.net/?retryWrites=true&w=majority", { useUnifiedTopology: true }, (err, client) => {
+MongoClient.connect(process.env.MONGO_URL, { useUnifiedTopology: true }, (err, client) => {
   if (err) {
     console.log(err);
   }
